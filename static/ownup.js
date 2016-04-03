@@ -9,10 +9,10 @@ var placements = {
          rotate: 180},
     3 : {x: windowWidth*.25 ,
          y: windowHeight*.5,
-         rotate: 270},
+         rotate: 90},
     4 : {x: windowWidth*.75 ,
          y: windowHeight*.75,
-         rotate: 90}
+         rotate: 270}
 };
 var activeButtons = [false, false, false, false];
 
@@ -21,10 +21,14 @@ function preload() {
     // Grab URL Params
     // Get each users' exhibit data
     // Add to global players array
-    players = [{"quotes":[]},
-                {"quotes":[]},
-                {"quotes":[]},
-                {"quotes":[]}];
+    players = [{"quotes":[],
+                "name": ""},
+                {"quotes":[],
+                 "name": ""},
+                {"quotes":[],
+                 "name": ""},
+                {"quotes":[],
+                 "name": ""}];
     totalPlayers = players.length;
     //if total players > 4, may want to throw exception
  
@@ -34,9 +38,12 @@ function setup() {
     myCanvas = createCanvas(windowWidth, windowHeight);
     myCanvas.parent('processing');
     angleMode(DEGREES);
+    rectMode(CENTER);
+    textAlign(CENTER);
     
 }
 
+//Do I really want a draw loop?
 function draw() {
     background(255);
     myGame.update();
@@ -82,12 +89,17 @@ var Game = function (players) {
 
 }
 
+// Card Objects for Players
 var Card = function (x, y, angle, index) {
     this.x = x;
     this.y = y;
+    this.height = windowHeight*.25;
+    this.width = windowWidth*.45;
     this.angle = angle;
     this.cardIndex = index;
     this.selected = false;
+    this.quote = '';
+    this.name = '';
 
     // Basic Card Display
     // Needs to support a special case if selected
@@ -95,8 +107,44 @@ var Card = function (x, y, angle, index) {
         if (this.selected == false){
             push();
                 rotate(this.angle);
+                //Show rect, name, quote
+                strokeWeight(8);
+                stroke('#333030');
+                rect(this.x, this.y, this.width, this.height);
+                fill(0);
+                text(this.name, this.x, this.y + this.height*.2 );
+                text(this.quote, this.x, this.y + this.height*.4, this.width*.9, this.height*.55);
+            pop();
+        } else {
+            push();
+                rotate(this.angle);
+                //show extra highlighting rectangle
+                fill("#6bbc4f");
+                rect(this.x, this.y, this.width + this.width*.1, this.height + this.height*.1);
+                strokeWeight(8);
+                stroke('#333030');
+                rect(this.x, this.y, this.width, this.height);
+                fill(0);
+                text(this.name, this.x, this.y + this.height*.2 );
+                text(this.quote, this.x, this.y + this.height*.4, this.width*.9, this.height*.55);
             pop();
         }
+
+    }
+
+    this.update = function () {
+        //change quote
+        //decide if this card was selected
+
+    }
+
+
+}
+
+// Game Timer
+var Timer = function () {
+
+    this.reset = function () {
 
     }
 
@@ -104,10 +152,13 @@ var Card = function (x, y, angle, index) {
 
     }
 
+    this.display = function () {
 
+    }
 }
 
-var Timer = function () {
+// Background quotes that weren't owned
+var UnOwned = function () {
 
     this.reset = function () {
 
