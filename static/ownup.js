@@ -1,4 +1,4 @@
-var players;
+var allPlayers;
 var totalPlayers;
 var placements = {
     1 : {x: windowWidth*.5 ,
@@ -21,7 +21,7 @@ function preload() {
     // Grab URL Params
     // Get each users' exhibit data
     // Add to global players array
-    players = [{"quotes":[],
+    allPlayers = [{"quotes":[],
                 "name": ""},
                 {"quotes":[],
                  "name": ""},
@@ -40,6 +40,8 @@ function setup() {
     angleMode(DEGREES);
     rectMode(CENTER);
     textAlign(CENTER);
+
+    myGame = new Game(allPlayers)
     
 }
 
@@ -55,6 +57,7 @@ var Game = function (players) {
     this.numPlay = players.length;
     this.quotes = this.allQuotes(players);
     this.cards = this.addCards(players);
+    this.timer = new Timer(windowWidth*.5, windowHeight*.5, 7);
 
     this.update = function () {
 
@@ -64,17 +67,21 @@ var Game = function (players) {
 
     }
 
-    this.addCards = function () {
+    this.addCards = function (players) {
         allCards = [];
         for (i in players) {
             card = new Card( placements[i + 1].x,
                              placements[i + 1].y,
                              placements[i + 1].rotate,
-                             i );
+                             i,
+                             players[i].name );
             allCards.push(card);
             activeButtons[i] = true;
         }
         return allCards;
+    }
+
+    this.timerTick = function () {
 
     }
 
@@ -90,7 +97,7 @@ var Game = function (players) {
 }
 
 // Card Objects for Players
-var Card = function (x, y, angle, index) {
+var Card = function (x, y, angle, index, name) {
     this.x = x;
     this.y = y;
     this.height = windowHeight*.25;
@@ -99,7 +106,7 @@ var Card = function (x, y, angle, index) {
     this.cardIndex = index;
     this.selected = false;
     this.quote = '';
-    this.name = '';
+    this.name = name;
 
     // Basic Card Display
     // Needs to support a special case if selected
@@ -142,17 +149,29 @@ var Card = function (x, y, angle, index) {
 }
 
 // Game Timer
-var Timer = function () {
+var Timer = function (x, y, roundTime) {
+    this.x = x;
+    this.y = y;
+    this.fullTime = roundTime;
+    this.currTime = 0;
 
     this.reset = function () {
+        this.currTime = this.fullTime;
 
     }
 
     this.update = function () {
+        if (this.currTime > 0) {
+            this.currTime--;
+        }
 
     }
 
     this.display = function () {
+        push();
+            fill("#e44b23");
+            text(this.currTime, this.x, this.y);
+        pop();
 
     }
 }
