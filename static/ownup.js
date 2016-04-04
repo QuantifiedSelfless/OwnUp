@@ -36,6 +36,7 @@ var Game = function (players) {
     }
 
     this.display = function () {
+        this.unowned.display()
         this.timer.display();
         for (i in this.cards) {
             this.cards[i].display();
@@ -50,16 +51,20 @@ var Game = function (players) {
         this.cards[button].selected = true;
         me = this
         setTimeout( function () {
-            me.nextQuote();}, 3000);
+            me.nextQuote();}, 500);
     }
 
     this.nextQuote = function () {
+        if (this.noOwn == true) {
+            this.unowned.addQuote(this.myQuote);
+            this.noOwn = false;
+        }
+
         if (this.quotes.length > 0) {
-            myQuote = this.quotes.pop();
-            console.log(myQuote);
+            this.myQuote = this.quotes.pop();
             for (card in this.cards) {
                 this.cards[card].selected = false;
-                this.cards[card].quote = myQuote;
+                this.cards[card].quote = this.myQuote;
             }
             this.roundOn = true;
             this.timer.reset();
@@ -91,13 +96,18 @@ var Game = function (players) {
     this.timerTick = function () {
         ticking = this.timer.update();
         console.log(this.roundOn);
-        if (ticking == false) {            
+        if (ticking == false && this.roundOn == true) {            
             clearInterval(this.timerInterval);
             this.noOwn = true;
             this.roundOn = false;
             me = this;
             setTimeout(function () {
-                me.nextQuote();}, 3000);
+                me.nextQuote();}, 500);
+        } else if (ticking == false && this.roundOn == false) {
+            clearInterval(this.timerInterval);
+            me = this;
+            setTimeout(function () {
+                me.nextQuote();}, 500);
         }
 
     }
@@ -123,6 +133,8 @@ var Game = function (players) {
     this.timerInterval = null;
     this.roundOn = false;
     this.noOwn = false;
+    this.unowned = new UnOwned();
+    this.myQuote = '';
 
 }
 
@@ -157,6 +169,7 @@ var Card = function (x, y, angle, index, name) {
 
                 stroke('#333030');
                 fill("#4470B1");
+                // fill('#ae4817');
                 rect(this.x, this.y, this.width, this.height);
                 strokeWeight(0);
                 fill(255);
@@ -171,17 +184,16 @@ var Card = function (x, y, angle, index, name) {
             push();
 
                 //show extra highlighting rectangle
-                fill("#48775E");
                 translate(windowWidth/2, windowHeight/2);
-                strokeWeight(0);
                 angleMode(DEGREES);
                 rectMode(CENTER);
                 textAlign(CENTER);
                 rotate(this.angle);
                 // rect(this.x, this.y, this.width + this.width*.1, this.height + this.height*.1);
-                strokeWeight(8);
+                strokeWeight(0);
                 stroke('#333030');
-                fill("#3EBF72")
+                fill("#3EBF72");
+                // fill("#395124");
                 rect(this.x, this.y, this.width, this.height);
                 fill(255);
                 strokeWeight(0);
@@ -234,7 +246,10 @@ var Timer = function (x, y, roundTime) {
 
     this.display = function () {
         push();
-            fill("#e44b23");
+            textFont(forum);
+            strokeWeight(0);
+            textSize(42);
+            fill("#C9DAF4");
             text(this.currTime, this.x, this.y);
         pop();
 
@@ -243,16 +258,33 @@ var Timer = function (x, y, roundTime) {
 
 // Background quotes that weren't owned
 var UnOwned = function () {
+    this.words = []
 
-    this.reset = function () {
-
-    }
-
-    this.update = function () {
-
+    this.addQuote = function ( quote ) {
+        newWord = { 
+            "text": quote,
+            "x": random(windowWidth),
+            "y": random(windowHeight),
+            "rotate": floor(random(360))
+        };
+        this.words.push(newWord);
+        console.log(this.words);
     }
 
     this.display = function () {
+        for (i in this.words) {
+            push();
+                angleMode(DEGREES);
+                rectMode(CENTER);
+                textFont(nimbus);
+                textSize(28);
+                strokeWeight(0);
+                fill('#ECC118');
+                translate(this.words[i].x, this.words[i].y);
+                rotate(this.words[i].rotate);
+                text(this.words[i].text, 0, 0);
+            pop();
+        }
 
     }
 }
@@ -266,6 +298,7 @@ function keyPressed() {
 function preload() {
     exo = loadFont('static/font/exo/Exo-Black.otf');
     forum = loadFont('static/font/forum/Forum-Regular.otf');
+    nimbus = loadFont('static/font/nimbus-mono/nimbusmono-regular.otf');
     // Grab URL Params
     // Get each users' exhibit data
     // Add to global players array
@@ -293,12 +326,14 @@ function setup() {
     rectMode(CENTER);
     textAlign(CENTER);
     myGame = new Game(allPlayers)
+
     myGame.start();
 }
 
 //Do I really want a draw loop?
 function draw() {
     background("#303741");
+    // background("#38230F");
     myGame.update();
     myGame.display();
 }
