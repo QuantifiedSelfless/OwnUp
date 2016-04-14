@@ -332,7 +332,7 @@ function preload() {
             url: baseurl + "userid=b9bef55d-e1c2-418b-979d-62762902ee38",
             success: function(data) {
                 console.log(data.data);
-                allplayers.push(data.data);
+                allPlayers.push(data.data);
                 getGoing();
             },
             error: function(resp) {
