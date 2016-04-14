@@ -2,6 +2,7 @@ var allPlayers;
 var totalPlayers;
 var activeButtons = [false, false, false, false];
 var myGame;
+var ready = false;
 var placements;
 var socket = io.connect('http://localhost:3000');
 socket.on('rfid', function (data) {
@@ -40,7 +41,7 @@ var Game = function (players) {
     }
 
     this.display = function () {
-        this.unowned.display()
+        this.unowned.display();
         this.timer.display();
         for (i in this.cards) {
             this.cards[i].display();
@@ -93,6 +94,9 @@ var Game = function (players) {
                              players[placement - 1].name );
             allCards.push(card);
             activeButtons[i] = true;
+            socket.on('button' + (i+1), function () {
+                myGame.buttonPress(i);
+            })
         }
         return allCards;
     }
@@ -234,7 +238,7 @@ var Timer = function (x, y, roundTime) {
     }
 
     this.startTimer = function () {
-        this.currTime = 2;
+        this.currTime = 8;
     }
 
     this.update = function () {
@@ -306,18 +310,50 @@ function preload() {
     // Grab URL Params
     // Get each users' exhibit data
     // Add to global players array
-    allPlayers = [{"quotes":["I've never actually seen a hamburger because they aren't that cool and I really don't want them or whatever.",
-                             "I'm not wild about Power Rangers anymore."],
-                "name": "Joey Fatone"},
-                {"quotes":["Are cheetos made from cheetahs?",
-                           "Soldiers are brave and I stick to that."],
-                 "name": "Robert McNamara"},
-                {"quotes":["The tooth fairy does exist.",
-                            "In ten years there will be flying cars."],
-                 "name": "Stacey Popstar"},
-                {"quotes":["The atomic bomb split time in half.",
-                             "Ferrets were created by The Devil."],
-                 "name": "Bob Dylan"}];
+    var baseurl = 'quantifiedselfbackend.local/ownup/quotes?';
+    // urlparams = getURLParams();
+    // for (key in Object.keys(urlparams)){ 
+    //     thing = Object.keys(params)[key]; 
+    //     userid = params[thing];
+    //     $.ajax({
+    //         type: 'POST',
+    //         url: baseurl,
+    //         data: data, 
+    //         success: function() {
+                
+    //         },
+    //         error: function(resp) {
+    //             console.log("didn't work")
+    //         }
+    //     });
+    // }
+
+    $.ajax({
+            type: 'GET',
+            url: baseurl + "userid=b9bef55d-e1c2-418b-979d-62762902ee38",
+            success: function(data) {
+                console.log(data.data);
+                allplayers.push(data.data);
+                getGoing();
+            },
+            error: function(resp) {
+                console.log("didn't work")
+            }
+        });
+    
+
+    // allPlayers = [{"quotes":["I've never actually seen a hamburger because they aren't that cool and I really don't want them or whatever.",
+    //                          "I'm not wild about Power Rangers anymore."],
+    //             "name": "Joey Fatone"},
+    //             {"quotes":["Are cheetos made from cheetahs?",
+    //                        "Soldiers are brave and I stick to that."],
+    //              "name": "Robert McNamara"},
+    //             {"quotes":["The tooth fairy does exist.",
+    //                         "In ten years there will be flying cars."],
+    //              "name": "Stacey Popstar"},
+    //             {"quotes":["The atomic bomb split time in half.",
+    //                          "Ferrets were created by The Devil."],
+    //              "name": "Bob Dylan"}];
     totalPlayers = allPlayers.length;
     //if total players > 4, may want to throw exception
  
@@ -329,15 +365,20 @@ function setup() {
     angleMode(DEGREES);
     rectMode(CENTER);
     textAlign(CENTER);
-    myGame = new Game(allPlayers)
+}
 
+function getGoing () {
+    myGame = new Game(allPlayers);
     myGame.start();
+    ready = true;
 }
 
 //Do I really want a draw loop?
 function draw() {
     background("#303741");
     // background("#38230F");
-    myGame.update();
-    myGame.display();
+    if (ready == true){
+        myGame.update();
+        myGame.display();
+    }
 }
