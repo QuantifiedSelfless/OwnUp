@@ -1,4 +1,4 @@
-var allPlayers;
+var allPlayers = [];
 var totalPlayers;
 var activeButtons = [false, false, false, false];
 var myGame;
@@ -377,5 +377,13 @@ function draw() {
     if (ready == true){
         myGame.update();
         myGame.display();
+    } else {
+        push();
+            textFont(forum);
+            strokeWeight(0);
+            textSize(42);
+            fill("#C9DAF4");
+            text("Hold on while we load up your quotes!", windowWidth/2, windowHeight/2);
+        pop();
     }
 }
