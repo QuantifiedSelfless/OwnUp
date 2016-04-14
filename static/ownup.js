@@ -82,7 +82,7 @@ var Game = function (players) {
             console.log("GAME OVER YOOOOO!");
             this.gameover = true;
             setTimeout( function () {
-                window.location = "http://google.com";
+                window.location = "http://localhost:8000";
             }, 10000)
         }
 
@@ -362,7 +362,9 @@ function preload() {
             },
             error: function(resp) {
                 console.log("didn't work");
-                window.location.reload();
+                setTimeout( function () { 
+		  window.location.reload();
+		}, 5000);
             }
         });
     
