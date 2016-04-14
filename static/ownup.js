@@ -361,7 +361,8 @@ function preload() {
                 getGoing();
             },
             error: function(resp) {
-                console.log("didn't work")
+                console.log("didn't work");
+                window.location.reload();
             }
         });
     
