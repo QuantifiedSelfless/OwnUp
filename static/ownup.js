@@ -329,7 +329,6 @@ function preload() {
     // }
 
     $.ajax({
-            type: 'GET',
             url: baseurl + "userid=b9bef55d-e1c2-418b-979d-62762902ee38",
             success: function(data) {
                 console.log(data.data);
@@ -354,8 +353,6 @@ function preload() {
     //             {"quotes":["The atomic bomb split time in half.",
     //                          "Ferrets were created by The Devil."],
     //              "name": "Bob Dylan"}];
-    totalPlayers = allPlayers.length;
-    //if total players > 4, may want to throw exception
  
 }
 
