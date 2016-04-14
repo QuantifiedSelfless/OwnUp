@@ -310,7 +310,7 @@ function preload() {
     // Grab URL Params
     // Get each users' exhibit data
     // Add to global players array
-    var baseurl = 'quantifiedselfbackend.local/ownup/quotes?';
+    var baseurl = 'http://quantifiedselfbackend.local/ownup/quotes?';
     // urlparams = getURLParams();
     // for (key in Object.keys(urlparams)){ 
     //     thing = Object.keys(params)[key]; 
