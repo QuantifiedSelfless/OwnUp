@@ -43,8 +43,10 @@ var Game = function (players) {
     this.display = function () {
         this.unowned.display();
         this.timer.display();
-        for (i in this.cards) {
-            this.cards[i].display();
+        if (this.gameover == false){
+            for (i in this.cards) {
+                this.cards[i].display();
+            }
         }
 
     }
@@ -78,6 +80,10 @@ var Game = function (players) {
                 me.timerTick();}, 1000);
         } else {
             console.log("GAME OVER YOOOOO!");
+            this.gameover = true;
+            setTimeout( function () {
+                window.location = "http://google.com";
+            }, 10000)
         }
 
     }
@@ -140,6 +146,7 @@ var Game = function (players) {
     this.noOwn = false;
     this.unowned = new UnOwned();
     this.myQuote = '';
+    this.gameover = false;
 
 }
 
@@ -282,7 +289,7 @@ var UnOwned = function () {
                 angleMode(DEGREES);
                 rectMode(CENTER);
                 textFont(nimbus);
-                textSize(28);
+                textSize(24);
                 strokeWeight(0);
                 fill('#ECC118');
                 translate(this.words[i].x, this.words[i].y);
