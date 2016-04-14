@@ -94,9 +94,6 @@ var Game = function (players) {
                              players[placement - 1].name );
             allCards.push(card);
             activeButtons[i] = true;
-            socket.on('button' + (i+1), function () {
-                myGame.buttonPress(i);
-            })
         }
         return allCards;
     }
@@ -303,6 +300,27 @@ function keyPressed() {
     }
 }
 
+socket.on('button1', function () {
+    if (myGame.roundOn == true && activeButtons[0] == true){
+        myGame.buttonPress(0);
+    }
+});
+
+socket.on('button2', function () {
+    if (myGame.roundOn == true && activeButtons[1] == true) {
+        myGame.buttonPress(1);
+    }
+});
+socket.on('button3', function () {
+    if (myGame.roundOn == true && activeButtons[2] == true) {
+        myGame.buttonPress(2);
+    }
+});
+socket.on('button4', function () {
+    if (myGame.roundOn == true && activeButtons[3] == true) {
+        myGame.buttonPress(3);
+    }
+});
 function preload() {
     exo = loadFont('static/font/exo/Exo-Black.otf');
     forum = loadFont('static/font/forum/Forum-Regular.otf');
