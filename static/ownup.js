@@ -328,6 +328,36 @@ socket.on('button4', function () {
         myGame.buttonPress(3);
     }
 });
+
+function make_AJAX_call(data, tryCount, retryLimit){
+    $.ajax({
+        type: 'GET',
+        url: "http://quantifiedselfbackend.local:6060/ownup/quotes",
+        data: data,
+        success: function(data) {
+            console.log(data.data);
+            allPlayers.push(data.data);
+            if (allPlayers.length == totalPlayers){
+                getGoing();
+            }
+        },
+        error: function(resp) {
+            console.log("Error: Ajax call failed");
+            tryCount++;
+            if (tryCount >= retryLimit){
+                window.location = "http://localhost:8000?error=try_again";
+            }
+            else { //Try again with exponential backoff.
+                setTimeout(function(){ 
+                    return make_AJAX_call(data, tryCount, retryLimit);
+                }, Math.pow(2, tryCount) * 1000);
+                return false;
+            }
+        }
+    });
+    return false;
+}
+
 function preload() {
     exo = loadFont('static/font/exo/Exo-Black.otf');
     forum = loadFont('static/font/forum/Forum-Regular.otf');
@@ -336,37 +366,14 @@ function preload() {
     // Get each users' exhibit data
     // Add to global players array
     var baseurl = 'http://quantifiedselfbackend.local:6060/ownup/quotes?';
-    // urlparams = getURLParams();
-    // for (key in Object.keys(urlparams)){ 
-    //     thing = Object.keys(params)[key]; 
-    //     userid = params[thing];
-    //     $.ajax({
-    //         type: 'POST',
-    //         url: baseurl,
-    //         data: data, 
-    //         success: function() {
-                
-    //         },
-    //         error: function(resp) {
-    //             console.log("didn't work")
-    //         }
-    //     });
-    // }
-
-    $.ajax({
-            url: baseurl + "userid=b9bef55d-e1c2-418b-979d-62762902ee38",
-            success: function(data) {
-                console.log(data.data);
-                allPlayers.push(data.data);
-                getGoing();
-            },
-            error: function(resp) {
-                console.log("didn't work");
-                setTimeout( function () { 
-		  window.location.reload();
-		}, 5000);
-            }
-        });
+    urlparams = getURLParams();
+    totalPlayers = Object.keys(urlparams).length;
+    for (key in Object.keys(urlparams)){ 
+        thing = Object.keys(urlparams)[key]; 
+        userid = urlparams[thing];
+        make_AJAX_call({rfid: userid}, 0, 3);
+        
+    }
     
 
     // allPlayers = [{"quotes":["I've never actually seen a hamburger because they aren't that cool and I really don't want them or whatever.",
