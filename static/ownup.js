@@ -71,6 +71,7 @@ var Game = function (players) {
             this.myQuote = this.quotes.pop();
             for (card in this.cards) {
                 this.cards[card].selected = false;
+                this.cards[card].lies = false;
                 this.cards[card].quote = this.myQuote;
             }
             this.roundOn = true;
@@ -110,6 +111,9 @@ var Game = function (players) {
         if (ticking == false && this.roundOn == true) {            
             clearInterval(this.timerInterval);
             this.noOwn = true;
+            for (card in this.cards) {
+                this.cards[card].lies = true;
+            }
             this.roundOn = false;
             me = this;
             setTimeout(function () {
@@ -165,6 +169,7 @@ var Card = function (x, y, angle, index, name) {
     this.selected = false;
     this.quote = '';
     this.name = name;
+    this.lies = false;
 
     // Basic Card Display
     // Needs to support a special case if selected
@@ -180,7 +185,11 @@ var Card = function (x, y, angle, index, name) {
                 rotate(this.angle);
 
                 stroke('#333030');
-                fill("#4470B1");
+                if (this.lies == true){
+                    fill("#AA4B39");
+                } else {
+                    fill("#4470B1");
+                }
                 // fill('#ae4817');
                 rect(this.x, this.y, this.width, this.height);
                 strokeWeight(0);
