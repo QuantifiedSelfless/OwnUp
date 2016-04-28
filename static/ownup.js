@@ -31,6 +31,9 @@ var Game = function (players) {
     this.start = function () {
         this.timer.startTimer();
         me = this;
+        for (card in this.cards) {
+            this.cards[card].beginning = true;
+        }
         this.timerInterval = setInterval(function () {
             me.timerTick();}, 1000);
     }
@@ -72,6 +75,7 @@ var Game = function (players) {
             for (card in this.cards) {
                 this.cards[card].selected = false;
                 this.cards[card].lies = false;
+                this.cards[card].beginning = false;
                 this.cards[card].quote = this.myQuote;
             }
             this.roundOn = true;
@@ -170,6 +174,7 @@ var Card = function (x, y, angle, index, name) {
     this.quote = '';
     this.name = name;
     this.lies = false;
+    this.beginning = false;
 
     // Basic Card Display
     // Needs to support a special case if selected
@@ -199,7 +204,11 @@ var Card = function (x, y, angle, index, name) {
                 text(this.name, this.x, this.y - this.height*.25 );
                 textFont(forum);
                 textSize(26);
-                text(this.quote, this.x, this.y + this.height*.1, this.width*.9, this.height*.55);
+                if (this.beginning == true){
+                   text("Instructions: If the quote that appears on the card is yours, press the button in front of you to own up to it!", this.x, this.y + this.height*.1, this.width*.9, this.height*.55); 
+                } else {
+                    text(this.quote, this.x, this.y + this.height*.1, this.width*.9, this.height*.55);
+                }
             pop();
         } else {
             push();
@@ -251,7 +260,7 @@ var Timer = function (x, y, roundTime) {
     }
 
     this.startTimer = function () {
-        this.currTime = 8;
+        this.currTime = 10;
     }
 
     this.update = function () {
